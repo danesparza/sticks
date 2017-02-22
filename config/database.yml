@@ -1,18 +1,26 @@
-default: &default
-  adapter: postgresql
-  encoding: unicode
-  pool: 5
-
 development:
-  <<: *default
-  database: sticks_development
+  adapter: postgresql
+  encoding: utf8
+  database: sticks-dev
+  pool: 5
+  username:
+  password:
 
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this database to the same as development or production.
 test:
-  <<: *default
-  database: sticks_test
+  adapter: postgresql
+  encoding: utf8
+  database: sticks-test
+  pool: 5
+  username:
+  password:
 
 production:
-  <<: *default
-  database: sticks_production
-  username: sticks
-  password: <%= ENV['STICKS_DATABASE_PASSWORD'] %>
+  adapter: postgresql
+  encoding: utf8
+  database: sticks-production
+  pool: 5
+  username:
+  password:
