@@ -11,6 +11,7 @@ gem 'figaro', '1.1.1'
 # Client
 gem 'sass-rails', '~> 5.0'
 gem 'jquery-rails'
+gem 'uglifier', '2.7.2'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
