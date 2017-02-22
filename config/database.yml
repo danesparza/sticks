@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: sticks_development
+
+test:
+  <<: *default
+  database: sticks_test
+
+production:
+  <<: *default
+  database: sticks_production
+  username: sticks
+  password: <%= ENV['STICKS_DATABASE_PASSWORD'] %>
