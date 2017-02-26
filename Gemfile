@@ -7,6 +7,7 @@ gem 'rails', '4.2.4'
 # Core
 gem 'pg', '0.19.0'
 gem 'figaro', '1.1.1'
+gem 'active_model_serializers', '0.9.4'
 
 # Client
 gem 'sass-rails', '~> 5.0'
