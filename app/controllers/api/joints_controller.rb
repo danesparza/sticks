@@ -5,4 +5,11 @@ class Api::JointsController < ApplicationController
            each_serializer: JointsSerializer,
            root: false
   end
+
+  def show
+    joint = Joint.find params[:id]
+    render json: joint,
+           each_serializer: JointsSerializer,
+           root: false
+  end
 end
