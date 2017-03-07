@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170226004657) do
+ActiveRecord::Schema.define(version: 20170303223735) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20170226004657) do
     t.text     "description"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "joint_type"
   end
 
   create_table "pieces", force: :cascade do |t|
@@ -31,5 +32,11 @@ ActiveRecord::Schema.define(version: 20170226004657) do
   end
 
   add_index "pieces", ["joint_id"], name: "index_pieces_on_joint_id", using: :btree
+
+  create_table "recents", force: :cascade do |t|
+    t.text     "queue",      default: [],              array: true
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
 
 end

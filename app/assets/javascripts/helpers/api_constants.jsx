@@ -3,9 +3,17 @@
 
     get joints() {
       return {
-        home: '/api/joints',
-        show: (id) => `/api/joints/${id}`,
+        home:             '/api/joints',
+        filter: (type) => `/api/joints/filter/${type}`,
+        show:   (id)   => `/api/joints/${id}`,
       };
+    }
+
+    get recents() {
+      return {
+        show:        '/api/recents/show',
+        add: (id) => `/api/recents/add/${id}`,
+      }
     }
   }
 
