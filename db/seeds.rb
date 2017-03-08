@@ -3,26 +3,75 @@
 #
 # Examples:
 #
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+#   cities = City.create([{ name: "Chicago" }, { name: "Copenhagen" }])
+#   Mayor.create(name: "Emanuel", city: cities.first)
 
-def create_joint_and_pieces
-  joint_1 = Joint.create(
-    name: 'End to Middle',
-    description: 'This is an end-to-middle joint. Use it to build cool stuff.'
-  )
+def create_joints
+  # End to End
+  1.upto(10) do |n|
+    joint = Joint.create(
+      name: "End to End #{n}",
+      description: "This is an end-to-end joint. Use it to build cool stuff",
+      joint_type: 0
+    )
+  end
 
-  piece_1 = Piece.create(name: 'End piece', joint: joint_1)
-  piece_2 = Piece.create(name: 'Middle piece', joint: joint_1)
+  # End to Middle
+  1.upto(10) do |n|
+    join = Joint.create(
+      name: "End to Middle #{n}",
+      description: "This is an end-to-middle joint. Use it to build cool stuff",
+      joint_type: 1
+    )
+  end
 
-
-  joint_2 = Joint.create(
-    name: 'Middle to Middle',
-    description: 'This is a middle-to-middle joint. Use it to build more cool stuff.'
-  )
-
-  piece_3 = Piece.create(name: 'First middle piece', joint: joint_2)
-  piece_4 = Piece.create(name: 'Second middle piece', joint: joint_2)
+  # Middle to Middle
+  1.upto(10) do |n|
+    join = Joint.create(
+      name: "Middle to Middle #{n}",
+      description: "This is an middle-to-middle joint. Use it to build cool stuff",
+      joint_type: 2
+    )
+  end
 end
 
-create_joint_and_pieces()
+
+def create_pieces
+  # Pieces for End to End
+  1.upto(20) do |n|
+    Piece.create(
+      name: "End piece",
+      joint: Joint.end_to_end[n % 10]
+    )
+  end
+
+  # Pieces for Middle to Middle
+  1.upto(20) do |n|
+    Piece.create(
+      name: "Middle piece",
+      joint: Joint.middle_to_middle[n % 10]
+    )
+  end
+
+  # Pieces for End to Middle
+  1.upto(10) do |n|
+    Piece.create(
+      name: "End piece",
+      joint: Joint.end_to_middle[n]
+    )
+    Piece.create(
+      name: "Middle piece",
+      joint: Joint.end_to_middle[n]
+    )
+  end
+end
+
+def create_recent
+  recent = Recent.create(
+    queue: []
+  )
+end
+
+create_joints()
+create_pieces()
+create_recent()
