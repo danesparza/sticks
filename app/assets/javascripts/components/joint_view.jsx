@@ -24,18 +24,14 @@ class JointView extends React.Component {
 
     return (
       <div>
-        <h1>{joint.name}</h1>
-        <h2>Pieces:</h2>
-        {showPieces}
         <div id="menus">
-          <h1>Sticks Very Good</h1>
-          <p>Joint: 包み蟻掛け仕口</p>
+          <p>{joint.name}</p>
           <form id="menu" action="form_action.asp">
-            <input type="radio" name="section" value="end" checked /> End Cut<br />
-            <input type="radio" name="section" value="center" /> Center Cut<br />
+            <input type="radio" name="section" defaultValue="end" defaultChecked /> End Cut<br />
+            <input type="radio" name="section" defaultValue="center" /> Center Cut<br />
 
-            Width (in): <input type="number" name="width" value="3.5" /><br />
-            Depth (in): <input type="number" name="depth" value="1.5" /><br />
+            Width (in): <input type="number" name="width" defaultValue="3.5" /><br />
+            Depth (in): <input type="number" name="depth" defaultValue="1.5" /><br />
 
             <input type="reset" /><br /><br />
           </form>
