@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 20170303223735) do
   add_index "pieces", ["joint_id"], name: "index_pieces_on_joint_id", using: :btree
 
   create_table "recents", force: :cascade do |t|
-    t.text     "queue",      default: [],              array: true
+    t.integer  "queue",      default: [],              array: true
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
