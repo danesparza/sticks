@@ -7,7 +7,7 @@ class JointView extends React.Component {
 
   componentDidMount = () => {
     console.log("Loading main svg code");
-    loadMain();
+    loadMain(this.props.joint.name);
   }
 
   render() {
@@ -24,20 +24,6 @@ class JointView extends React.Component {
 
     return (
       <div>
-        <div id="menus">
-          <p>{joint.name}</p>
-          <form id="menu" action="form_action.asp">
-            <input type="radio" name="section" defaultValue="end" defaultChecked /> End Cut<br />
-            <input type="radio" name="section" defaultValue="center" /> Center Cut<br />
-
-            Width (in): <input type="number" name="width" defaultValue="3.5" /><br />
-            Depth (in): <input type="number" name="depth" defaultValue="1.5" /><br />
-
-            <input type="reset" /><br /><br />
-          </form>
-          <button onClick={svgCalculate}>Preview Cut</button>
-          <button onClick={generateGCode}>Download G-code</button>
-        </div>
         <canvas id="pathCanvas" data-paper-resize></canvas>
       </div>
     );
