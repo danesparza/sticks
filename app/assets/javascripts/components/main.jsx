@@ -19,6 +19,7 @@ Constants for pathing & g-code generation
 Recommended feeds & speeds from https://othermachine.co/support/materials/wood/
 Everything currently in inches or inches/minute
 */
+// NEED TO CHANGE THESE TO REFLECT CHANGES IN G-CODE (mm vs inches)
 var bit = 0.1250; // Our bit is 1/8th inch
 var offset = 0.58579 * bit; // We offset for the 90 degree angles ((2 - sqrt(2))x)
 var cutFeed = 24; // feed rate
@@ -198,13 +199,12 @@ function discretizeToGCode(cutPaths, fromDepth, toDepth) {
 
 function svgCalculate(){
   project.clear(); // Remove everything and re-calculate
-  menu = document.getElementById("menu");
-  width = menu.elements["width"].value;
+  width = params.width;
   scaledWidth = width * 50;
-  depth = menu.elements["depth"].value;
+  depth = params.depth;
   cut1Depth = depth * 1 / 3; // 1/3rd of the way down
   cut2Depth = depth * 2 / 3; // 2/3rd of the way down
-  section = menu.elements["section"].value;
+  section = params.cut;
 
   viewSize = new Size(scaledWidth, scaledWidth);
   psuedoView1Center = new Point(pseudoView1.topCenter.x - scaledWidth / 2, pseudoView1.leftCenter.y - scaledWidth / 2); // Center of pseudoview
@@ -333,24 +333,25 @@ function refreshView(){ //For setting up and resizing.
 }
 
 // var params;
-loadMain = function() {
+loadMain = function(jointname) {
   paper.install(window);
 
-  // var gui = new dat.GUI();
-  // params = {
-  //   bit_size: 1/16,
-  //   cut: "END",
-  //   preview: svgCalculate,
-  //   save: function(){
-  //     console.log("SAVED",  params.bit_size);
-  //   }
-  // }
-  // //gui.add(params, "bit_size").min(1/32).max(1/8).step(1/64);
-  // var f1 = gui.addFolder("Initial");
-  // f1.add(params, "bit_size").options([16, 32, 64]);
-  // f1.add(params, "cut").options(["end", "center"]);
-  // f1.add(params, "preview");
-  // f1.open();
+  // Initialize dat.gui
+  var gui = new dat.GUI();
+  params = {
+    width: 3.5,
+    depth: 1.5,
+    cut: "end",
+    preview: svgCalculate,
+    download: generateGCode,
+  }
+  var name = gui.addFolder(jointname);
+  name.add(params, 'width', 0, 5).step(0.5);
+  name.add(params, 'depth', 0, 5).step(0.5);
+  name.add(params, 'cut').options(["end", "center"]); // Should load from joint settings
+  name.add(params, 'preview');
+  name.add(params, 'download');
+  name.open();
 
   paper.setup('pathCanvas');
   paper.loadCustomLibraries();
