@@ -4,10 +4,17 @@ var psuedoView2;
 
 // Specifically for this joint (E2M, 2 cuts)
 // These should be set by the relevant data/svgs
+var piece1Cut1;
+var piece1Cut2;
+var piece2Cut1;
+var piece2Cut2;
+
 var cut1;
 var cut1Align = "";
+var cut1Round = [];
 var cut2;
 var cut2Align = "";
+var cut2Round = [];
 var cutRect1;
 var cutRect2;
 var cut1Depth;
@@ -90,9 +97,23 @@ paper.loadCustomLibraries = function(){
 /* Map path's perimeter points into jsclipper format
 [[{X:30,Y:30},{X:130,Y:30},{X:130,Y:130},{X:30,Y:130}]]*/
 function toClipperPoints(path, offset=1) {
+  // for (var i = 0; i < path.segments.length; i++) {
+  //   points.push({X: path.segments[i].point.x, Y: path.segments[i].point.y});
+  // }
+
   var points = []; // Should be origin
-  for (var i = 0; i < path.segments.length; i++) {
-    points.push({X: path.segments[i].point.x, Y: path.segments[i].point.y});
+  points.push({X: path.firstCurve.point1.x, Y: path.firstCurve.point1.y});
+  for(var curveNum = 0; curveNum < path.curves.length; curveNum++){
+    curve = path.curves[curveNum];
+    if(curve.isStraight()){
+      pt = curve.point2;
+      points.push({X: pt.x, Y: pt.y});
+    } else {
+      for(offset = discStep; offset <= curve.length; offset += discStep){
+        pt = curve.getLocationAt(offset).point;
+        points.push({X: pt.x, Y: pt.y});
+      }
+    }
   }
   return [points]; // compound paths
 }
@@ -161,6 +182,47 @@ function align(object, key, side) {
   }
 }
 
+// Rounds the corners of a path in Paper.js
+// -- Translated from PaperScript to plain JavaScript. Originally by Alex Blackwood.
+// -- http://stackoverflow.com/questions/25936566/paper-js-achieving-smoother-edges-with-closed-paths
+function roundCorners(path,radius,roundedCorners) {
+  var segments = path.segments.slice(0);
+  path.removeSegments();
+
+  for(var i = 0, l = segments.length; i < l; i++) {
+    if (roundedCorners.indexOf(i) != -1) {
+      var curPoint = segments[i].point;
+      var nextPoint = segments[i + 1 == l ? 0 : i + 1].point;
+      var prevPoint = segments[i - 1 < 0 ? segments.length - 1 : i - 1].point;
+      var nextDelta = curPoint.subtract(nextPoint);
+      var prevDelta = curPoint.subtract(prevPoint);
+
+      nextDelta.length = radius;
+      prevDelta.length = radius;
+
+      path.add(
+        new paper.Segment(
+          curPoint.subtract(prevDelta),
+          null,
+          prevDelta.divide(2)
+        )
+      );
+
+      path.add(
+        new paper.Segment(
+          curPoint.subtract(nextDelta),
+          nextDelta.divide(2),
+          null
+        )
+      );
+    } else {
+      path.add(segments[i])
+    }
+  }
+  path.closed = true;
+  return path;
+}
+
 function discretizeToGCode(cutPaths, fromDepth, toDepth) {
   pathsGCode = []
   for(z = -fromDepth; z > -toDepth - passDepth; z -= passDepth){ // Just in case.
@@ -217,37 +279,42 @@ function svgCalculate(){
   if(section == "end"){
     // TODO: Change these for different joints
     // We must keep the cuts at their size relative to actual width (for accurate offsetting when path is calculated).
-    cut1 = Path.Rectangle(new Point(0,0), new Size(width*1, width*1)); // Don't ask why it multiplies by 1 - Javascript yo ( ͡° ͜ʖ ͡°)
-    cut2 = new Path([
-      new Point(0,0),
-      new Point(width*0.9,0),
-      new Point(width*0.9,width*0.3),
-      new Point(width*0.4,width*0.2),
-      new Point(width*0.4,width*0.8),
-      new Point(width*0.9,width*0.7),
-      new Point(width*0.9,width*1),
-      new Point(0,width*1),
-      new Point(0,0)
-    ])
-    cut2Align = "L";
+    cut1 = new Path();
+    for (var i = 0; i < piece1Cut1.points.length; i++) {
+      cut1.add(new Point(width * piece1Cut1.points[i][0], width * piece1Cut1.points[i][1]));
+    }
+    cut1Align = piece1Cut1.align;
+    cut1Round = piece1Cut1.rounded;
+
+    cut2 = new Path();
+    for (var i = 0; i < piece1Cut2.points.length; i++) {
+      cut2.add(new Point(width * piece1Cut2.points[i][0], width * piece1Cut2.points[i][1]));
+    }
+    cut2Align = piece1Cut2.align;
+    cut2Round = piece1Cut2.rounded;
   } else if (section == "center"){
     // TODO: Change these for different joints
-    cut1 = Path.Rectangle(new Point(0,0), new Size(width*1, width*1)); // Don't ask why it multiplies by 1 - Javascript yo ( ͡° ͜ʖ ͡°)
-    cut2 = new Path([
-      new Point(width*0.9,0),
-      new Point(width*1,0),
-      new Point(width*1,width*1),
-      new Point(width*0.9,width*1),
-      new Point(width*0.9,width*0.7),
-      new Point(width*0.4,width*0.8),
-      new Point(width*0.4,width*0.2),
-      new Point(width*0.9,width*0.3),
-      new Point(width*0.9,0)
-    ])
-    cut2Align = "R";
+    cut1 = new Path();
+    for (var i = 0; i < piece2Cut1.points.length; i++) {
+      cut1.add(new Point(width * piece2Cut1.points[i][0], width * piece2Cut1.points[i][1]));
+    }
+    cut1Align = piece2Cut1.align;
+    cut1Round = piece2Cut1.rounded;
+
+    cut2 = new Path();
+    for (var i = 0; i < piece2Cut2.points.length; i++) {
+      cut2.add(new Point(width * piece2Cut2.points[i][0], width * piece2Cut2.points[i][1]));
+    }
+    cut2Align = piece2Cut2.align;
+    cut2Round = piece2Cut2.rounded;
   }
 
+  roundCorners(cut1, bit, cut1Round);
+  roundCorners(cut2, bit, cut2Round);
+
   // Loop over all cuts (and cutRects)
+  // cut1Paths = cut1;
+  // cut2Paths = cut2;
   cut1Paths = generateCutPath(cut1, cutRect1, cut1Align);
   cut2Paths = generateCutPath(cut2, cutRect2, cut2Align);
 
@@ -333,7 +400,20 @@ function refreshView(){ //For setting up and resizing.
 }
 
 // var params;
-loadMain = function(jointname) {
+loadMain = function(jointname, p1c1, p1c2, p2c1, p2c2) {
+  $.getJSON(p1c1, function(json) {
+    piece1Cut1 = json;
+  });
+  $.getJSON(p1c2, function(json) {
+    piece1Cut2 = json;
+  });
+  $.getJSON(p2c1, function(json) {
+    piece2Cut1 = json;
+  });
+  $.getJSON(p2c2, function(json) {
+    piece2Cut2 = json;
+  });
+
   paper.install(window);
 
   // Initialize dat.gui

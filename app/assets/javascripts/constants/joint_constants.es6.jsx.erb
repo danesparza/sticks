@@ -1,0 +1,13 @@
+(() => {
+  class JointConstants {
+    get joints() {
+      return {
+        scarfEndCut1: "<%= asset_path("jsons/scarf/end/cut1.json") %>",
+        scarfEndCut2: "<%= asset_path("jsons/scarf/end/cut2.json") %>",
+        scarfCenterCut1: "<%= asset_path("jsons/scarf/center/cut1.json") %>",
+        scarfCenterCut2: "<%= asset_path("jsons/scarf/center/cut2.json") %>"
+      };
+    }
+  }
+  this.JointConstants = new JointConstants();
+})();

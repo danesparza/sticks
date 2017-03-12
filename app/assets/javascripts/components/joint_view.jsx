@@ -7,7 +7,7 @@ class JointView extends React.Component {
 
   componentDidMount = () => {
     console.log("Loading main svg code");
-    loadMain(this.props.joint.name);
+    loadMain(this.props.joint.name, JointConstants.joints.scarfEndCut1, JointConstants.joints.scarfEndCut2, JointConstants.joints.scarfCenterCut1, JointConstants.joints.scarfCenterCut2);
   }
 
   render() {
