@@ -10,6 +10,22 @@ class JointView extends React.Component {
     loadMain();
   }
 
+  _download = () => {
+    generateGCode();
+    this._addToRecents();
+  }
+
+  _addToRecents = () => {
+    const { pieces } = this.props;
+
+    const route = ApiConstants.recents.add(pieces[0].id);
+    console.log(pieces[0].id)
+    const resolve = (response) => console.log('success');
+    const reject = (response) => console.log(response);
+
+    Requester.get(route, resolve, reject)
+  }
+
   render() {
     const { joint, pieces } = this.props;
     let showPieces;
@@ -36,7 +52,7 @@ class JointView extends React.Component {
             <input type="reset" /><br /><br />
           </form>
           <button onClick={svgCalculate}>Preview Cut</button>
-          <button onClick={generateGCode}>Download G-code</button>
+          <button onClick={this._download}>Download G-code</button>
         </div>
         <canvas id="pathCanvas" data-paper-resize></canvas>
       </div>

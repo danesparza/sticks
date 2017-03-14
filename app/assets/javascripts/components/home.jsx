@@ -63,7 +63,8 @@ class Home extends React.Component {
 
     return (
       <div>
-        Hello there. This is the home react component :)
+        <h1>Recent Pieces</h1>
+        <RecentPieces />
 
         <h1>End To End</h1>
         { allPieces[0] }

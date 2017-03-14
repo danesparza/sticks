@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     get '/joints/:id', to: 'joints#show'
     get '/joints/filter/:type', to: 'joints#filter'
 
-    get '/recents/show', to: 'recents#show'
-    get '/recents/add/:id', to: 'recents#add'
+    get '/recents', to: 'pieces#get_recent_pieces'
+    get '/recents/add/:id', to: 'pieces#add_to_recents'
   end
 end
