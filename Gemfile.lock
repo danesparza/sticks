@@ -42,6 +42,7 @@ GEM
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
     arel (6.0.4)
+    awesome_print (1.7.0)
     babel-source (5.8.35)
     babel-transpiler (0.7.0)
       babel-source (>= 4.0, < 6)
@@ -149,6 +150,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (= 0.9.4)
   annotate
+  awesome_print
   byebug
   figaro (= 1.1.1)
   jquery-rails

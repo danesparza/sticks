@@ -11,7 +11,7 @@
 
     get recents() {
       return {
-        show:        '/api/recents/show',
+        show:        '/api/recents',
         add: (id) => `/api/recents/add/${id}`,
       }
     }
