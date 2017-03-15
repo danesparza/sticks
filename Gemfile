@@ -13,6 +13,8 @@ gem 'react-rails', '1.10.0'
 # Client
 gem 'sass-rails', '~> 5.0'
 gem 'jquery-rails'
+gem 'normalize-rails'
+gem 'tether-rails'
 gem 'uglifier', '2.7.2'
 
 group :development, :test do

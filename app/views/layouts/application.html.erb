@@ -5,8 +5,16 @@
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+  <link href="https://unpkg.com/normalize.css@^4.1.1" rel="stylesheet" />
+  <link href="https://unpkg.com/@blueprintjs/core@^1.11.0/dist/blueprint.css" rel="stylesheet" />
 </head>
 <body>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/dom4/1.8.3/dom4.js">/* DOM4 */</script>
+  <script src="https://unpkg.com/classnames@^2.2"></script>
+  <script src="https://unpkg.com/tether@^1.4"></script>
+  <script src="https://unpkg.com/react@^15.3.1/dist/react-with-addons.min.js"></script>
+  <script src="https://unpkg.com/react-dom@^15.3.1/dist/react-dom.min.js"></script>
+  <script src="https://unpkg.com/@blueprintjs/core@^1.11.0"></script>
 
 <%= yield %>
 
