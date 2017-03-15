@@ -261,12 +261,13 @@ function discretizeToGCode(cutPaths, fromDepth, toDepth) {
 
 function svgCalculate(){
   project.clear(); // Remove everything and re-calculate
-  width = params.width;
+  menu = document.getElementById("menu");
+  width = menu.elements["width"].value;
   scaledWidth = width * 50;
-  depth = params.depth;
+  depth = menu.elements["depth"].value;
   cut1Depth = depth * 1 / 3; // 1/3rd of the way down
   cut2Depth = depth * 2 / 3; // 2/3rd of the way down
-  section = params.cut;
+  section = menu.elements["section"].value;
 
   viewSize = new Size(scaledWidth, scaledWidth);
   psuedoView1Center = new Point(pseudoView1.topCenter.x - scaledWidth / 2, pseudoView1.leftCenter.y - scaledWidth / 2); // Center of pseudoview
@@ -400,7 +401,7 @@ function refreshView(){ //For setting up and resizing.
 }
 
 // var params;
-loadMain = function(jointname, p1c1, p1c2, p2c1, p2c2) {
+loadMain = function(p1c1, p1c2, p2c1, p2c2) {
   $.getJSON(p1c1, function(json) {
     piece1Cut1 = json;
   });
@@ -415,23 +416,6 @@ loadMain = function(jointname, p1c1, p1c2, p2c1, p2c2) {
   });
 
   paper.install(window);
-
-  // Initialize dat.gui
-  var gui = new dat.GUI();
-  params = {
-    width: 3.5,
-    depth: 1.5,
-    cut: "end",
-    preview: svgCalculate,
-    download: generateGCode,
-  }
-  var name = gui.addFolder(jointname);
-  name.add(params, 'width', 0, 5).step(0.5);
-  name.add(params, 'depth', 0, 5).step(0.5);
-  name.add(params, 'cut').options(["end", "center"]); // Should load from joint settings
-  name.add(params, 'preview');
-  name.add(params, 'download');
-  name.open();
 
   paper.setup('pathCanvas');
   paper.loadCustomLibraries();
