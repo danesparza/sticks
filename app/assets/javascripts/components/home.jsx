@@ -9,11 +9,20 @@ class Home extends React.Component {
 
   componentDidMount() {
     this._fetchAllJoints();
+    this._fetchRecentPieces();
   }
 
   _fetchAllJoints = () => {
     const route = ApiConstants.joints.home;
     const resolve = (response) => this.setState({ joints: response });
+    const reject = (response) => console.log(response);
+
+    Requester.get(route, resolve, reject);
+  }
+
+  _fetchRecentPieces = () => {
+    const route = ApiConstants.recents.show;
+    const resolve = (response) => this.setState({ recent_pieces: response });
     const reject = (response) => console.log(response);
 
     Requester.get(route, resolve, reject);
@@ -48,10 +57,11 @@ class Home extends React.Component {
 
   render() {
     const { e2e, e2m, m2m } = this._filterByJointType();
+    const { recent_pieces } = this.state;
 
     console.log(e2e, e2m, m2m)
 
-    let recents = <Panel items={[]}/>;
+    let recents = <Panel items={recent_pieces}/>;
     let e2ePanel = <Panel items={e2e} />;
     let e2mPanel = <Panel items={e2m} />;
     let m2mPanel = <Panel items={m2m} />;
