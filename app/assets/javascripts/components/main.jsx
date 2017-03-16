@@ -393,11 +393,11 @@ function generateGCode(){
 function refreshView(){ //For setting up and resizing.
   // TODO: Make it so that the number of cuts dictates the number of "views"
   // TODO: Make it move everything around
-  var rectSize = new Size(view.bounds.width, view.bounds.height / 2);
+  var rectSize = new Size(view.bounds.width / 2, view.bounds.height);
   pseudoView1.size = rectSize;
   pseudoView1.topLeft = new Point(0, 0);
   pseudoView2.size = rectSize;
-  pseudoView2.topLeft = pseudoView1.bottomLeft;
+  pseudoView2.topLeft = pseudoView1.topRight;
 }
 
 // var params;
