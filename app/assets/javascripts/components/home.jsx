@@ -9,11 +9,20 @@ class Home extends React.Component {
 
   componentDidMount() {
     this._fetchAllJoints();
+    this._fetchRecentPieces();
   }
 
   _fetchAllJoints = () => {
     const route = ApiConstants.joints.home;
     const resolve = (response) => this.setState({ joints: response });
+    const reject = (response) => console.log(response);
+
+    Requester.get(route, resolve, reject);
+  }
+
+  _fetchRecentPieces = () => {
+    const route = ApiConstants.recents.show;
+    const resolve = (response) => this.setState({ recent_pieces: response });
     const reject = (response) => console.log(response);
 
     Requester.get(route, resolve, reject);
@@ -48,32 +57,24 @@ class Home extends React.Component {
 
   render() {
     const { e2e, e2m, m2m } = this._filterByJointType();
+    const { recent_pieces } = this.state;
 
-    let allPieces = [e2e, e2m, m2m].map((i) => {
-      return i.map((item, index) => {
-        const route = RouteConstants.joints.show(item.id);
-        return (
-          <div key={index}>
-            <h3><a href={route}>{item.name}</a></h3>
-            <p>{item.description}</p>
-          </div>
-        )
-      })
-    })
+    console.log(e2e, e2m, m2m)
+
+    let recents = <Panel items={recent_pieces}/>;
+    let e2ePanel = <Panel items={e2e} />;
+    let e2mPanel = <Panel items={e2m} />;
+    let m2mPanel = <Panel items={m2m} />;
+
 
     return (
-      <div>
-        <h1>Recent Pieces</h1>
-        <RecentPieces />
-
-        <h1>End To End</h1>
-        { allPieces[0] }
-
-        <h1>End To Middle</h1>
-        { allPieces[1] }
-
-        <h1>Middle To Middle</h1>
-        { allPieces[2] }
+      <div className="home-view">
+        <Blueprint.Core.Tabs2 id="home">
+          <Blueprint.Core.Tab2 id="rec" title="Recents" panel={recents} />
+          <Blueprint.Core.Tab2 id="e2e" title="End to End" panel={e2ePanel} />
+          <Blueprint.Core.Tab2 id="e2m" title="End to Middle" panel={e2mPanel} />
+          <Blueprint.Core.Tab2 id="m2m" title="Middle to Middle" panel={m2mPanel} />
+        </Blueprint.Core.Tabs2>
       </div>
     );
   }
