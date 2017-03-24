@@ -37,11 +37,13 @@ class PanelItem extends React.Component {
 
     return (
       <div className="panel-item" key={key}>
-        <div className="panel-item-img">
-          <video autoPlay loop src="https://video.twimg.com/tweet_video/CzXmIiYUoAEWF6I.mp4" alt="" className=""></video>
-        </div>
-        <h3><a href={route}>{item.name}</a></h3>
-        <p>{item.description}</p>
+        <a href={route}>
+          <div className="panel-item-img">
+            <video autoPlay loop src="https://video.twimg.com/tweet_video/CzXmIiYUoAEWF6I.mp4" alt="" className=""></video>
+          </div>
+          <h3>{item.name}</h3>
+          <p>{item.description}</p>
+        </a>
       </div>
     );
   }
