@@ -39,7 +39,7 @@ class PanelItem extends React.Component {
       <div className="panel-item" key={key}>
         <a href={route}>
           <div className="panel-item-img">
-            <video autoPlay loop src="https://video.twimg.com/tweet_video/CzXmIiYUoAEWF6I.mp4" alt="" className=""></video>
+            <div style={{"backgroundColor": "#F4f4f4"}}></div>
           </div>
           <h3>{item.name}</h3>
           <p>{item.description}</p>
