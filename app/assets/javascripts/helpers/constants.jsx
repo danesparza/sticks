@@ -3,16 +3,17 @@ Constants for pathing & g-code generation
 Recommended feeds & speeds from https://othermachine.co/support/materials/wood/
 Everything currently in inches or inches/minute
 */
+
 // NEED TO CHANGE THESE TO REFLECT CHANGES IN G-CODE (mm vs inches)
-const bit = 0.1250; // Our bit is 1/8th inch
-const offset = 0.58579 * bit; // We offset for the 90 degree angles ((2 - sqrt(2))x)
-const cutFeed = 24; // feed rate
+const bit = 0.1250;             // Our bit is 1/8th inch
+const offset = 0.58579 * bit;   // We offset for the 90 degree angles ((2 - sqrt(2))x)
+const cutFeed = 24;             // feed rate
 const plungeFeed = 1.5;
-const plunge = 1.6; // plunge rate
-const spindle = 12000; // RPM
-const passDepth = 0.010; // Maximum pass depth
-const zHeight = 0.5; // Height above actual 0 (to change cuts)
-const discStep = 0.005; // Discretization step of 5 mil
+const plunge = 1.6;             // plunge rate
+const spindle = 12000;          // RPM
+const passDepth = 0.010;        // Maximum pass depth
+const zHeight = 0.5;            // Height above actual 0 (to change cuts)
+const discStep = 0.005;         // Discretization step of 5 mil
 
 // These should not change, so we define them here
 const setWCS = "G55 (set work coordinate system)\n"

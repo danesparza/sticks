@@ -107,60 +107,68 @@ class JointView extends React.Component {
     }, this._svgCalculate);
   }
 
+  _renderInputs = (name) => {
+    const defaultVal = this.state[name];
+
+    return (
+      <div className="pt-form-group pt-large pt-inline">
+        <label htmlFor={`input-${name}`} className="pt-label">
+          {this._capitalize(name)}
+          <span className="pt-text-muted"> (in)</span>
+        </label>
+        <div className="pt-form-content pt-large">
+          <div className="pt-input-group pt-large">
+            <input className="pt-input pt-fill" name="width" id={`input-${name}`}
+              type="text" defaultValue={defaultVal} onChange={this._handleChange} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   render() {
     const { joint, pieces } = this.props;
     let { width, depth } = this.state;
-
-    let showPieces;
-
-    if (this.props.pieces) {
-      showPieces = pieces.map((item, index) => {
-        return <div key={index}>
-          <h3>Piece {index + 1}: {item.name}</h3>
-        </div>
-      })
-    }
 
     return (
       <div className="joint-view">
         <nav className="pt-navbar pt-dark joint-view-nav">
           <div className="pt-navbar-group back-btn">
-            <a href="/" className="pt-button pt-minimal">back</a>
+            <a href="/" className="pt-button pt-minimal">
+              <span className="pt-icon-chevron-left"></span>
+              back</a>
           </div>
           <div className="pt-navbar-group joint-title">{joint.name}</div>
         </nav>
 
-        <Blueprint.Core.RadioGroup
-            label="Joint Type"
-            onChange={this._handleRadioChange}
-            selectedValue={this.state.section}>
-            <Blueprint.Core.Radio label="End" name="end" value="end" />
-            <Blueprint.Core.Radio label="Center" name="center" value="center" />
-        </Blueprint.Core.RadioGroup>
+        <div className="container">
+          <div className="col-half canvas">
+            <canvas id="pathCanvas" data-paper-resize></canvas>
+          </div>
 
-        <label htmlFor="" className="pt-label">
-          Width
-          <span className="pt-text-muted"> (in)</span>
-          <input className="pt-input" name="width"
-            type="text" defaultValue={width}
-            onChange={this._handleChange} />
-        </label>
+          <div className="col-half inputs">
+            <h3 className="type-title">Joint Type</h3>
+            <Blueprint.Core.RadioGroup
+                label=""
+                className="pt-large"
+                onChange={this._handleRadioChange}
+                selectedValue={this.state.section}>
+                <Blueprint.Core.Radio className="pt-large" label="End"
+                  name="end" value="end" />
+                <Blueprint.Core.Radio className="pt-large" label="Center"
+                  name="center" value="center" />
+            </Blueprint.Core.RadioGroup>
 
-        <label htmlFor="" className="pt-label">
-          Depth
-          <span className="pt-text-muted"> (in)</span>
-          <input className="pt-input" name="depth"
-            type="text" defaultValue={depth}
-            onChange={this._handleChange} />
-        </label>
+            <h3 className="dimen-title">Dimensions</h3>
+            {this._renderInputs("width")}
+            {this._renderInputs("depth")}
 
-        <button className="pt-button pt-intent-primary"
-          onClick={this._download} type="button" pt-icon-download>
-          Download G-code
-        </button>
-
-        <canvas id="pathCanvas" data-paper-resize></canvas>
-
+            <button className="pt-button pt-intent-primary pt-large pt-fill pt-icon-download"
+              onClick={this._download} type="button">
+              Download G-code
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
