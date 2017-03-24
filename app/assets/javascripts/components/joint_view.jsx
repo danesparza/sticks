@@ -16,6 +16,8 @@ class JointView extends React.Component {
       cut2: null,
       cut2Align: "",
       cut2Round: [],
+      cut1Paths: null,
+      cut2Paths: null,
     };
   }
 
@@ -23,6 +25,10 @@ class JointView extends React.Component {
     let callback = this._svgCalculate;
 
     this._fetchJSON(callback);
+  }
+
+  _capitalize = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   _fetchJSON = (callback) => {
@@ -43,7 +49,7 @@ class JointView extends React.Component {
   }
 
   _download = () => {
-    generateGCode();
+    this._generateGCode();
     this._addToRecents();
   }
 
@@ -58,6 +64,11 @@ class JointView extends React.Component {
     }, () => {
       this._refreshView();
     })
+
+    view.onResize = () => {
+      this._refreshView();
+      view.draw();
+    }
   }
 
   _refreshView = () => {
@@ -84,10 +95,16 @@ class JointView extends React.Component {
     Requester.get(route, resolve, reject)
   }
 
+  _handleRadioChange = (e) => {
+    this.setState({
+      section: $(e.target).attr("value"),
+    }, this._svgCalculate);
+  }
+
   _handleChange = (e) => {
     this.setState({
       [$(e.target).attr("name")] : $(e.target).val(),
-    });
+    }, this._svgCalculate);
   }
 
   render() {
@@ -113,32 +130,37 @@ class JointView extends React.Component {
           <div className="pt-navbar-group joint-title">{joint.name}</div>
         </nav>
 
-        <div id="menus">
-          <input type="radio" name="section"
-            defaultValue="end" defaultChecked /> End Cut<br />
-          <input type="radio" name="section"
-            defaultValue="center" /> Center Cut<br />
+        <Blueprint.Core.RadioGroup
+            label="Joint Type"
+            onChange={this._handleRadioChange}
+            selectedValue={this.state.section}>
+            <Blueprint.Core.Radio label="End" name="end" value="end" />
+            <Blueprint.Core.Radio label="Center" name="center" value="center" />
+        </Blueprint.Core.RadioGroup>
 
-          <label htmlFor="" className="pt-label">
-            Width
-            <span class="pt-text-muted">(in)</span>
-            <input class="pt-input" name="width"
-              type="text" defaultValue={width}
-              onChange={this._handleChange} />
-          </label>
+        <label htmlFor="" className="pt-label">
+          Width
+          <span className="pt-text-muted"> (in)</span>
+          <input className="pt-input" name="width"
+            type="text" defaultValue={width}
+            onChange={this._handleChange} />
+        </label>
 
-          <label htmlFor="" className="pt-label">
-            Depth
-            <span class="pt-text-muted">(in)</span>
-            <input class="pt-input" name="depth"
-              type="text" defaultValue={depth}
-              onChange={this._handleChange} />
-          </label>
+        <label htmlFor="" className="pt-label">
+          Depth
+          <span className="pt-text-muted"> (in)</span>
+          <input className="pt-input" name="depth"
+            type="text" defaultValue={depth}
+            onChange={this._handleChange} />
+        </label>
 
-          <button className="pt-button" onClick={this._svgCalculate}>Preview Cut</button>
-          <button className="pt-button" onClick={this._download}>Download G-code</button>
-        </div>
+        <button className="pt-button pt-intent-primary"
+          onClick={this._download} type="button" pt-icon-download>
+          Download G-code
+        </button>
+
         <canvas id="pathCanvas" data-paper-resize></canvas>
+
       </div>
     );
   }
@@ -241,8 +263,8 @@ class JointView extends React.Component {
     // Loop over all cuts (and cutRects)
     // cut1Paths = cut1;
     // cut2Paths = cut2;
-    cut1Paths = generateCutPath(cut1, cutRect1, cut1Align);
-    cut2Paths = generateCutPath(cut2, cutRect2, cut2Align);
+    let cut1Paths = generateCutPath(cut1, cutRect1, cut1Align);
+    let cut2Paths = generateCutPath(cut2, cutRect2, cut2Align);
 
     var cut1Visible = cut1Paths.clone(); // Generate these to show users
     var cut2Visible = cut2Paths.clone();
@@ -284,6 +306,8 @@ class JointView extends React.Component {
       piece1Cut2,
       piece2Cut1,
       piece2Cut2,
+      cut1Paths,
+      cut2Paths,
     }, () => {
       view.draw();
     })
@@ -361,6 +385,61 @@ class JointView extends React.Component {
 
       return generated;
     }
+  }
+
+  _generateGCode = () => {
+    const {
+      cut1Paths,
+      cut2Paths,
+      cut1Depth,
+      cut2Depth,
+    } = this.state;
+
+    // Generate the actual gcode from the cuts, put into this string.
+    gCodeText = [];
+
+    // G-Code Preamble stuff
+    gCodeText.push("(PREAMBLE)\n");
+    gCodeText.push(setWCS);
+    gCodeText.push(setUnits);
+    gCodeText.push(setAbs);
+
+    // Getting ready to move
+    gCodeText.push("(SETUP)\n");
+    gCodeText.push(zUp);
+    gCodeText.push(home);
+    gCodeText.push(spindleOn);
+
+    // Time to mill!
+    gCodeText.push("(MILLING)\n");
+    gCodeText.push.apply(gCodeText, discretizeToGCode(cut1Paths, 0, cut1Depth));
+    gCodeText.push.apply(gCodeText, discretizeToGCode(cut2Paths, cut1Depth, cut2Depth));
+
+    gCodeText.push("(FINISHING)\n");
+    gCodeText.push(zUp);
+    gCodeText.push(home);
+    gCodeText.push(spindleOff);
+
+    // Download the file.
+    var fileName = "file.txt"
+    var element = document.createElement('a');
+    element.setAttribute('id', 'downloadGCode');
+    element.setAttribute('download', fileName); // Make it work in Chrome... but fail elsewhere.
+    element.style.display = 'none';
+    properties = {type: 'plain/text'}; // Specify the file's mime-type.
+    try {
+      // Specify the filename using the File constructor, but ...
+      file = new File(gCodeText, fileName, properties);
+    } catch (e) {
+      // ... fall back to the Blob constructor if that isn't supported.
+      file = new Blob(gCodeText, properties);
+    }
+    url = URL.createObjectURL(file);
+
+    document.body.appendChild(element);
+    document.getElementById('downloadGCode').href = url;
+    element.click();
+    document.body.removeChild(element);
   }
 }
 
