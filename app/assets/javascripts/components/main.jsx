@@ -423,6 +423,8 @@ loadMain = function(p1c1, p1c2, p2c1, p2c2) {
   // TODO: Make it so that the number of cuts dictates the number of "views"
   pseudoView1 = new Rectangle();
   pseudoView2 = new Rectangle();
+
+  // don't really need
   refreshView();
 
   view.onResize = function(event) {
