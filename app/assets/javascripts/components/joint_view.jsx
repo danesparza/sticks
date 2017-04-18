@@ -1,3 +1,5 @@
+let port;
+
 class JointView extends React.Component {
   constructor(props) {
     super(props);
@@ -25,6 +27,16 @@ class JointView extends React.Component {
     let callback = this._svgCalculate;
 
     this._fetchJSON(callback);
+
+    serial.getPorts().then(ports => {
+      if (ports.length == 0) {
+        // statusDisplay.textContent = 'No device found.';
+      } else {
+        // statusDisplay.textContent = 'Connecting...';
+        port = ports[0];
+        this.connect();
+      }
+    });
   }
 
   _capitalize = (string) => {
@@ -126,6 +138,86 @@ class JointView extends React.Component {
     )
   }
 
+  _onConnectBtnClick = () => {
+    if (port) {
+      port.disconnect();
+      this.setState({statusDisplay: '', });
+      port = null;
+    } else {
+      serial.requestPort().then(selectedPort => {
+        port = selectedPort;
+        connect();
+      }).catch(error => {
+        this.setState({statusDisplay: error, });
+      });
+    }
+  }
+
+  connect = () => {
+    port.connect().then(() => {
+      this.setState({statusDisplay: '', });
+      port.onReceive = data => {
+        let textDecoder = new TextDecoder();
+        console.log(textDecoder.decode(data));
+      }
+      port.onReceiveError = error => {
+        console.error(error);
+      };
+    }, error => {
+      statusDisplay.textContent = error;
+    });
+  }
+
+  send = () => {
+    if (!port) {
+      return;
+    }
+
+    let view = new Uint16Array(1);
+    view[0] = 0x4c;
+
+    port.send(view);
+  }
+
+  _ab2str = (buf) => {
+    return String.fromCharCode.apply(null, new Uint16Array(buf));
+  }
+
+  _str2ab = (str) => {
+    var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+    var bufView = new Uint8Array(buf);
+    for (var i=0, strLen=str.length; i<strLen; i++) {
+      bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+  }
+
+  on = () => {
+    if (!port) {
+      return;
+    }
+
+    let view = new Uint16Array(1);
+    view[0] = 0x48;
+
+    port.send(this._str2ab("Hello"));
+  }
+
+  off = () => {
+    if (!port) {
+      return;
+    }
+
+    let view = new Uint8Array(3);
+    view[0] = 0x24;
+    view[1] = 0x48;
+    view[2] = 0x0A
+
+    console.log(view)
+
+    port.send(view);
+  }
+
   render() {
     const { joint, pieces } = this.props;
     let { width, depth } = this.state;
@@ -147,6 +239,11 @@ class JointView extends React.Component {
           </div>
 
           <div className="col-half inputs">
+            <p>
+              <button id="connect" onClick={this._onConnectBtnClick}>Connect</button> <span id="status"></span>
+              <button onClick={this.on}>ON</button>
+              <button onClick={this.off}>OFF</button>
+            </p>
             <h3 className="type-title">Joint Type</h3>
             <Blueprint.Core.RadioGroup
                 label=""
