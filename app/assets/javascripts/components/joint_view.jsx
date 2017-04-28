@@ -1,10 +1,11 @@
-let port;
+let port, ws;
 
 class JointView extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      wsConnected: false,
       width: 3.5,
       depth: 1.5,
       section: 'end',
@@ -28,15 +29,20 @@ class JointView extends React.Component {
 
     this._fetchJSON(callback);
 
-    serial.getPorts().then(ports => {
-      if (ports.length == 0) {
-        // statusDisplay.textContent = 'No device found.';
-      } else {
-        // statusDisplay.textContent = 'Connecting...';
-        port = ports[0];
-        this.connect();
-      }
-    });
+    // WEB SOCKET
+    ws = new WebSocket("ws://localhost:8888/ws");
+
+    ws.onopen = () => {
+      this.setState({ wsConnected: true, });
+      console.log("Connected!")
+    }.bind(this);
+
+    ws.onclose = () => {
+      this.setState({ wsConnected: false, });
+      console.log("Disconnected!");
+    }.bind(this);
+
+    ws.onmessage = this.receiveMessage;
   }
 
   _capitalize = (string) => {
@@ -153,69 +159,17 @@ class JointView extends React.Component {
     }
   }
 
-  connect = () => {
-    port.connect().then(() => {
-      this.setState({statusDisplay: '', });
-      port.onReceive = data => {
-        let textDecoder = new TextDecoder();
-        console.log(textDecoder.decode(data));
-      }
-      port.onReceiveError = error => {
-        console.error(error);
-      };
-    }, error => {
-      statusDisplay.textContent = error;
-    });
+  receiveMessage = (evt) => {
+    let box = document.querySelector(".messages");
+    let newMessage = document.createElement('p');
+
+    newMessage.textContent = "Server: " + evt.data;
+    box.prepend(newMessage);
   }
 
-  send = () => {
-    if (!port) {
-      return;
-    }
-
-    let view = new Uint16Array(1);
-    view[0] = 0x4c;
-
-    port.send(view);
-  }
-
-  _ab2str = (buf) => {
-    return String.fromCharCode.apply(null, new Uint16Array(buf));
-  }
-
-  _str2ab = (str) => {
-    var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-    var bufView = new Uint8Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  }
-
-  on = () => {
-    if (!port) {
-      return;
-    }
-
-    let view = new Uint16Array(1);
-    view[0] = 0x48;
-
-    port.send(this._str2ab("Hello"));
-  }
-
-  off = () => {
-    if (!port) {
-      return;
-    }
-
-    let view = new Uint8Array(3);
-    view[0] = 0x24;
-    view[1] = 0x48;
-    view[2] = 0x0A
-
-    console.log(view)
-
-    port.send(view);
+  sendCommand = (command) => {
+    console.log(command)
+    ws.send(command);
   }
 
   render() {
@@ -240,9 +194,28 @@ class JointView extends React.Component {
 
           <div className="col-half inputs">
             <p>
-              <button id="connect" onClick={this._onConnectBtnClick}>Connect</button> <span id="status"></span>
+              <button className="pt-button pt-large"
+                onClick={this.sendCommand.bind(this, "$h")}>Home</button>
+
+              <br/>
+
+              <button className="pt-button pt-large"
+                onClick={this.sendCommand.bind(this, "g1 x-10\n")}>&larr;</button>
+              <button className="pt-button pt-large"
+                onClick={this.sendCommand.bind(this, "g1 y10\n")}>&uarr;</button>
+              <button className="pt-button pt-large"
+                onClick={this.sendCommand.bind(this, "g1 y-10\n")}>&darr;</button>
+              <button className="pt-button pt-large"
+                onClick={this.sendCommand.bind(this, "g1 x10\n")}>&rarr;</button>
+
+              <div className="messages">
+
+              </div>
+              {this.state.message}
+
+              {/*<button id="connect" onClick={this._onConnectBtnClick}>Connect</button> <span id="status"></span>
               <button onClick={this.on}>ON</button>
-              <button onClick={this.off}>OFF</button>
+              <button onClick={this.off}>OFF</button>*/}
             </p>
             <h3 className="type-title">Joint Type</h3>
             <Blueprint.Core.RadioGroup
