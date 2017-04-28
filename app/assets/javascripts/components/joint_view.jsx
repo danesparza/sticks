@@ -169,7 +169,10 @@ class JointView extends React.Component {
 
   sendCommand = (command) => {
     console.log(command)
+
+    ws.send("g91");
     ws.send(command);
+    ws.send("g90");
   }
 
   render() {
