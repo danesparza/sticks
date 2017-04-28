@@ -200,13 +200,13 @@ class JointView extends React.Component {
               <br/>
 
               <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g1 x-10\n")}>&larr;</button>
+                onClick={this.sendCommand.bind(this, "g0 x-10")}>&larr;</button>
               <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g1 y10\n")}>&uarr;</button>
+                onClick={this.sendCommand.bind(this, "g0 y10")}>&uarr;</button>
               <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g1 y-10\n")}>&darr;</button>
+                onClick={this.sendCommand.bind(this, "g0 y-10")}>&darr;</button>
               <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g1 x10\n")}>&rarr;</button>
+                onClick={this.sendCommand.bind(this, "g0 x10")}>&rarr;</button>
 
               <div className="messages">
 
