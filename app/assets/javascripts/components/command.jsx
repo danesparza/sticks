@@ -58,30 +58,44 @@ class Command extends React.Component {
           { connectedState }
         </div>
         <div className="btn-container">
-          <button className="pt-button pt-large"
-            onClick={this.sendCommand.bind(this, "g0 y10")}>
-              <span className="pt-icon-large pt-icon-arrow-up"></span>
-          </button>
-          <br/>
+          <div className="left">
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 y10")}>
+                <span className="pt-icon-large pt-icon-arrow-up"></span>
+            </button>
+            <br/>
 
-          <button className="pt-button pt-large"
-            onClick={this.sendCommand.bind(this, "g0 x-10")}>
-            <span className="pt-icon-large pt-icon-arrow-left"></span>
-          </button>
-          <button className="pt-button pt-large"
-            onClick={this.sendCommand.bind(this, "$h")}>
-            <span className="pt-icon-large pt-icon-home"></span>
-          </button>
-          <button className="pt-button pt-large"
-            onClick={this.sendCommand.bind(this, "g0 x10")}>
-              <span className="pt-icon-large pt-icon-arrow-right"></span>
-          </button>
-          <br/>
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 x-10")}>
+              <span className="pt-icon-large pt-icon-arrow-left"></span>
+            </button>
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "$h")}>
+              <span className="pt-icon-large pt-icon-home"></span>
+            </button>
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 x10")}>
+                <span className="pt-icon-large pt-icon-arrow-right"></span>
+            </button>
+            <br/>
 
-          <button className="pt-button pt-large"
-            onClick={this.sendCommand.bind(this, "g0 y-10")}>
-              <span className="pt-icon-large pt-icon-arrow-down"></span>
-          </button>
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 y-10")}>
+                <span className="pt-icon-large pt-icon-arrow-down"></span>
+            </button>
+          </div>
+
+          <div className="right">
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 z1")}>
+                <span className="pt-icon-large pt-icon-arrow-up"></span>
+            </button>
+            <br/>
+            <button className="pt-button pt-large"
+              onClick={this.sendCommand.bind(this, "g0 z-1")}>
+                <span className="pt-icon-large pt-icon-arrow-down"></span>
+            </button>
+          </div>
         </div>
 
         <h5>Responses</h5>

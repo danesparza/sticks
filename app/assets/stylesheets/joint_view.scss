@@ -74,9 +74,14 @@
   }
 
   .btn-container {
-    display: inline-block;
+    align-items: center;
+    display: flex;
     margin-bottom: 30px;
     text-align: center;
+
+    div {
+      width: 50%;
+    }
 
     button {
       margin: 5px;
