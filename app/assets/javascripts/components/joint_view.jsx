@@ -28,21 +28,6 @@ class JointView extends React.Component {
     let callback = this._svgCalculate;
 
     this._fetchJSON(callback);
-
-    // WEB SOCKET
-    ws = new WebSocket("ws://localhost:8888/ws");
-
-    ws.onopen = () => {
-      this.setState({ wsConnected: true, });
-      console.log("Connected!")
-    }.bind(this);
-
-    ws.onclose = () => {
-      this.setState({ wsConnected: false, });
-      console.log("Disconnected!");
-    }.bind(this);
-
-    ws.onmessage = this.receiveMessage;
   }
 
   _capitalize = (string) => {
@@ -113,37 +98,6 @@ class JointView extends React.Component {
     Requester.get(route, resolve, reject)
   }
 
-  _handleRadioChange = (e) => {
-    this.setState({
-      section: $(e.target).attr("value"),
-    }, this._svgCalculate);
-  }
-
-  _handleChange = (e) => {
-    this.setState({
-      [$(e.target).attr("name")] : $(e.target).val(),
-    }, this._svgCalculate);
-  }
-
-  _renderInputs = (name) => {
-    const defaultVal = this.state[name];
-
-    return (
-      <div className="pt-form-group pt-large pt-inline">
-        <label htmlFor={`input-${name}`} className="pt-label">
-          {this._capitalize(name)}
-          <span className="pt-text-muted"> (in)</span>
-        </label>
-        <div className="pt-form-content pt-large">
-          <div className="pt-input-group pt-large">
-            <input className="pt-input pt-fill" name="width" id={`input-${name}`}
-              type="text" defaultValue={defaultVal} onChange={this._handleChange} />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   _onConnectBtnClick = () => {
     if (port) {
       port.disconnect();
@@ -159,25 +113,11 @@ class JointView extends React.Component {
     }
   }
 
-  receiveMessage = (evt) => {
-    let box = document.querySelector(".messages");
-    let newMessage = document.createElement('p');
-
-    newMessage.textContent = "Server: " + evt.data;
-    box.prepend(newMessage);
-  }
-
-  sendCommand = (command) => {
-    console.log(command)
-
-    ws.send("g91");
-    ws.send(command);
-    ws.send("g90");
-  }
-
   render() {
     const { joint, pieces } = this.props;
     let { width, depth } = this.state;
+    let command = <Command ws={ws} />
+    let dimension = <Dimensions />
 
     return (
       <div className="joint-view">
@@ -196,50 +136,10 @@ class JointView extends React.Component {
           </div>
 
           <div className="col-half inputs">
-            <p>
-              <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "$h")}>Home</button>
-
-              <br/>
-
-              <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g0 x-10")}>&larr;</button>
-              <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g0 y10")}>&uarr;</button>
-              <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g0 y-10")}>&darr;</button>
-              <button className="pt-button pt-large"
-                onClick={this.sendCommand.bind(this, "g0 x10")}>&rarr;</button>
-
-              <div className="messages">
-
-              </div>
-              {this.state.message}
-
-              {/*<button id="connect" onClick={this._onConnectBtnClick}>Connect</button> <span id="status"></span>
-              <button onClick={this.on}>ON</button>
-              <button onClick={this.off}>OFF</button>*/}
-            </p>
-            <h3 className="type-title">Joint Type</h3>
-            <Blueprint.Core.RadioGroup
-                label=""
-                className="pt-large"
-                onChange={this._handleRadioChange}
-                selectedValue={this.state.section}>
-                <Blueprint.Core.Radio className="pt-large" label="End"
-                  name="end" value="end" />
-                <Blueprint.Core.Radio className="pt-large" label="Center"
-                  name="center" value="center" />
-            </Blueprint.Core.RadioGroup>
-
-            <h3 className="dimen-title">Dimensions</h3>
-            {this._renderInputs("width")}
-            {this._renderInputs("depth")}
-
-            <button className="pt-button pt-intent-primary pt-large pt-fill pt-icon-download"
-              onClick={this._download} type="button">
-              Download G-code
-            </button>
+            <Blueprint.Core.Tabs2 id="controls">
+              <Blueprint.Core.Tab2 id="ctrl" title="Control" panel={command} />
+              <Blueprint.Core.Tab2 id="dimen" title="Dimensions" panel={dimension} />
+            </Blueprint.Core.Tabs2>
           </div>
         </div>
       </div>
