@@ -5,18 +5,11 @@ class Dimensions extends React.Component {
     this.state = {
       width: 3.5,
       depth: 1.5,
-      section: 'end',
     };
   }
 
   _capitalize = (string) => {
       return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-  _handleRadioChange = (e) => {
-    this.setState({
-      section: $(e.target).attr("value"),
-    }, this._svgCalculate);
   }
 
   _subtractInput = (name) => {
@@ -71,8 +64,8 @@ class Dimensions extends React.Component {
         <Blueprint.Core.RadioGroup
             label=""
             className="pt-large"
-            onChange={this._handleRadioChange}
-            selectedValue={this.state.section}>
+            onChange={this.props.changeSection}
+            selectedValue={this.props.section}>
             <Blueprint.Core.Radio className="pt-large" label="End"
               name="end" value="end" />
             <Blueprint.Core.Radio className="pt-large" label="Center"

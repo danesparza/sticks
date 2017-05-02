@@ -1,0 +1,11 @@
+(() => {
+  class ImageConstants {
+    get joint() {
+      return {
+        end: "<%= asset_path("images/end.png") %>",
+        center: "<%= asset_path("images/center.png") %>",
+      };
+    }
+  }
+  this.ImageConstants = new ImageConstants();
+})();

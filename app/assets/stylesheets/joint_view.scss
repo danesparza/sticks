@@ -56,6 +56,16 @@
   .col-half {
     padding: 15px;
     width: 50%;
+
+    &.canvas {
+      padding: none;
+      text-align: center;
+
+      img {
+        max-width: 550px;
+        width: 100%;
+      }
+    }
   }
 
   .inputs {

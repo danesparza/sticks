@@ -25,9 +25,9 @@ class JointView extends React.Component {
   }
 
   componentDidMount = () => {
-    let callback = this._svgCalculate;
+    // let callback = this._svgCalculate;
 
-    this._fetchJSON(callback);
+    // this._fetchJSON(callback);
   }
 
   _capitalize = (string) => {
@@ -113,11 +113,25 @@ class JointView extends React.Component {
     }
   }
 
+  _changeSection = (e) => {
+    this.setState({
+      section: $(e.target).attr("value"),
+    });
+
+    // Usually, you want to refresh the SVG with the setState callback
+    // this.setState({
+    //   section: $(e.target).attr("value"),
+    // }, this._svgCalculate);
+  }
+
   render() {
     const { joint, pieces } = this.props;
-    let { width, depth } = this.state;
+    let { width, depth, section } = this.state;
     let command = <Command ws={ws} />
-    let dimension = <Dimensions />
+    let dimension = <Dimensions section={section}
+      changeSection={this._changeSection} />
+
+    const imgSrc = section == "end" ? ImageConstants.joint.end : ImageConstants.joint.center;
 
     return (
       <div className="joint-view">
@@ -132,7 +146,8 @@ class JointView extends React.Component {
 
         <div className="container">
           <div className="col-half canvas">
-            <canvas id="pathCanvas" data-paper-resize></canvas>
+            <img src={imgSrc} alt=""/>
+            {/*<canvas id="pathCanvas" data-paper-resize></canvas>*/}
           </div>
 
           <div className="col-half inputs">
